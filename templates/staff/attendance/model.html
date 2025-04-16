@@ -1,3 +1,4 @@
+
 {% extends 'layouts/staff.html' %}
 {% load static %}
 {% block content %}
@@ -27,6 +28,16 @@
 
 <div class="row my-3">
     <div class="col-md-12">
+        <div class="mb-3">
+            <input type="text" id="searchAttendance" class="form-control" placeholder="Search by day or date...">
+        </div>
+        <div class="mb-3">
+            <div class="btn-group" role="group">
+                <button type="button" class="btn btn-outline-primary active filter-btn" data-filter="all">All</button>
+                <button type="button" class="btn btn-outline-primary filter-btn" data-filter="Regular">Regular</button>
+                <button type="button" class="btn btn-outline-primary filter-btn" data-filter="Bonus">Bonus</button>
+            </div>
+        </div>
         <div class="table-responsive">
             <table class="table">
                 <thead>
@@ -38,7 +49,7 @@
                 </thead>
                 <tbody>
                     {% for x in att_models %}
-                    <tr>
+                    <tr class="attendance-row" data-day="{{ x.day }}">
                         <td>{{ x.day }}</td>
                         <td>{{ x.date }}</td>
                         <td>
@@ -51,4 +62,52 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Search functionality
+        const searchInput = document.getElementById('searchAttendance');
+        searchInput.addEventListener('keyup', function() {
+            const searchTerm = this.value.toLowerCase();
+            const rows = document.querySelectorAll('.attendance-row');
+            
+            rows.forEach(row => {
+                const day = row.querySelector('td:first-child').textContent.toLowerCase();
+                const date = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
+                
+                if (day.includes(searchTerm) || date.includes(searchTerm)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+        
+        // Filter buttons
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        filterButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                // Update active state
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+                
+                const filter = this.dataset.filter;
+                const rows = document.querySelectorAll('.attendance-row');
+                
+                rows.forEach(row => {
+                    if (filter === 'all') {
+                        row.style.display = '';
+                    } else {
+                        const dayType = row.dataset.day;
+                        if (dayType === filter) {
+                            row.style.display = '';
+                        } else {
+                            row.style.display = 'none';
+                        }
+                    }
+                });
+            });
+        });
+    });
+</script>
 {% endblock %}

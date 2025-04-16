@@ -1,3 +1,4 @@
+
 from urllib import response
 from django.shortcuts import render
 from django.http import HttpResponseRedirect, HttpResponse
@@ -6,7 +7,7 @@ from account.models import Roles, Profile
 from django.db.models import Q
 from django.contrib import messages
 from staff.models import Staff
-
+from django.views.decorators.csrf import csrf_protect, ensure_csrf_cookie
 from student.models import Student
 
 # Create your views here.
@@ -33,6 +34,8 @@ def insertAdmin():
         profile.role = Roles.objects.get(pk = 1)
         profile.save()
 
+@ensure_csrf_cookie
+@csrf_protect
 def login(request):
     content = {}
     insertRoles()
@@ -57,7 +60,6 @@ def login(request):
                 response.set_cookie('ck_std_name', str(request.session['account_name']), 86400)
                 response.set_cookie('ck_std_profile_id', str(request.session['account_id']), 86400)
                 response.set_cookie('ck_std_id', str(request.session['student_id']), 86400)
-                print(response)
                 return response
             elif(profile.role_id == 2):
                 std = Staff.objects.filter(profile_id = int(request.session['account_id'])).first()
@@ -69,6 +71,7 @@ def login(request):
             messages.error(request, "Credentials provided does not matched in our records.")
     return render(request, 'account/login.html', content)
 
+@csrf_protect
 def logout(request):
     del request.session['account_name']
     del request.session['account_role']
