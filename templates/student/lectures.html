@@ -148,6 +148,18 @@
             <h2 class="display-4 text-primary fw-bold mb-3">{{ title }}</h2>
             <p class="lead">Explore our comprehensive library of educational content</p>
             <hr class="my-4">
+            
+            <!-- Filter controls -->
+            <div class="mb-4">
+                <div class="d-flex justify-content-center">
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-outline-primary active filter-btn" data-filter="all">All Courses</button>
+                        <button type="button" class="btn btn-outline-primary filter-btn" data-filter="python">Python</button>
+                        <button type="button" class="btn btn-outline-primary filter-btn" data-filter="sql">SQL</button>
+                        <button type="button" class="btn btn-outline-primary filter-btn" data-filter="web">Web Dev</button>
+                    </div>
+                </div>
+            </div>
         </div>
 
         {% if enrolled_events %}

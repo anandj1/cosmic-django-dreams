@@ -393,6 +393,7 @@ def attendanceConduct(request, pk):
         messages.error(request, "Please login first.")
         return HttpResponseRedirect(reverse('account-login'))
 
+@csrf_protect
 def attPresent(request, pk):
     if request.session.has_key('account_id'):
         if(request.session['account_role'] == 2):
@@ -419,7 +420,11 @@ def attPresent(request, pk):
                 return HttpResponseRedirect(reverse('st-att-conduct', kwargs={'pk': att_id}))
         else:
             return HttpResponseForbidden()
+    else:
+        messages.error(request, "Please login first.")
+        return HttpResponseRedirect(reverse('account-login'))
 
+@csrf_protect
 def attAbsent(request, pk):
     if request.session.has_key('account_id'):
         if(request.session['account_role'] == 2):
@@ -446,8 +451,12 @@ def attAbsent(request, pk):
                 return HttpResponseRedirect(reverse('st-att-conduct', kwargs={'pk': att_id}))
         else:
             return HttpResponseForbidden()
+    else:
+        messages.error(request, "Please login first.")
+        return HttpResponseRedirect(reverse('account-login'))
 
 
+@csrf_protect
 def attLeave(request, pk):
     if request.session.has_key('account_id'):
         if(request.session['account_role'] == 2):
@@ -475,6 +484,9 @@ def attLeave(request, pk):
                 return HttpResponseRedirect(reverse('st-att-conduct', kwargs={'pk': att_id}))
         else:
             return HttpResponseForbidden()
+    else:
+        messages.error(request, "Please login first.")
+        return HttpResponseRedirect(reverse('account-login'))
 
 def extraCirricular(request):
     if request.session.has_key('account_id'):
