@@ -1,5 +1,4 @@
-
-from datetime import datetime
+from datetime import datetime, timedelta
 from itertools import count
 from suadmin.models import Event, EventParticipants
 import profile
@@ -84,11 +83,11 @@ def train(request):
                     csv_writer = csv.writer(csv_file)
                     csv_writer.writerow(['id', 'student', 'coin', 'date'])
 
-                curret_date = datetime.today()
+                current_date = datetime.today()
                 
                 # Filter data based on training option
                 if training_option == 'recent':
-                    thirty_days_ago = curret_date - datetime.timedelta(days=30)
+                    thirty_days_ago = current_date - timedelta(days=30)
                     crd = crd.filter(date__gte=thirty_days_ago)
                     gms = gms.filter(date__gte=thirty_days_ago)
                     atts = atts.filter(date__gte=thirty_days_ago)
@@ -215,7 +214,6 @@ def predict(request):
         messages.error(request, "Please login first.")
         return HttpResponseRedirect(reverse('account-login'))
 
-# Adding the missing staff function
 @csrf_protect
 @ensure_csrf_cookie
 def staff(request):
@@ -258,7 +256,6 @@ def staff(request):
         messages.error(request, "Please login first.")
         return HttpResponseRedirect(reverse('account-login'))
 
-# Add implementations for event, eventParti, and feedback functions
 def event(request):
     if request.session.has_key('account_id'):
         if(request.session['account_role'] == 1):
