@@ -73,9 +73,12 @@ def login(request):
 
 @csrf_protect
 def logout(request):
-    del request.session['account_name']
-    del request.session['account_role']
-    del request.session['account_id']
+    if 'account_name' in request.session:
+        del request.session['account_name']
+    if 'account_role' in request.session:
+        del request.session['account_role'] 
+    if 'account_id' in request.session:
+        del request.session['account_id']
     messages.success(request, "You are logged out!.")
     return HttpResponseRedirect(reverse('account-login'))
 
