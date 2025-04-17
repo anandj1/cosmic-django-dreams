@@ -127,9 +127,9 @@
         
         const csrftoken = getCookie('csrftoken');
         
-        // Setup for AJAX requests to include CSRF token
+        // Setup CSRF token for all AJAX requests
         document.addEventListener('DOMContentLoaded', function() {
-            // Set up AJAX to always send CSRF token
+            // Add CSRF token to all AJAX requests
             const xhrSend = XMLHttpRequest.prototype.send;
             XMLHttpRequest.prototype.send = function() {
                 this.setRequestHeader('X-CSRFToken', csrftoken);

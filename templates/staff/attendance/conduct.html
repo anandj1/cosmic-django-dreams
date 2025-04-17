@@ -315,23 +315,23 @@
                 const row = this.closest('tr');
                 const statusCell = this.closest('td');
                 
-                // Show action buttons again
+                // Show action buttons again with CSRF token
                 statusCell.innerHTML = `
                     <div class="d-flex justify-content-center action-buttons">
                         <form action="{% url 'st-att-conduct-present' 0 %}".replace('0', studentId) method="post" class="me-2">
-                            {% csrf_token %}
+                            <input type="hidden" name="csrfmiddlewaretoken" value="${csrftoken}">
                             <button type="submit" class="btn btn-success action-btn btn-attendance" data-status="present">
                                 <i class='bx bx-check me-1'></i> Present
                             </button>
                         </form>
                         <form action="{% url 'st-att-conduct-absent' 0 %}".replace('0', studentId) method="post" class="me-2">
-                            {% csrf_token %}
+                            <input type="hidden" name="csrfmiddlewaretoken" value="${csrftoken}">
                             <button type="submit" class="btn btn-danger action-btn btn-attendance" data-status="absent">
                                 <i class='bx bx-x me-1'></i> Absent
                             </button>
                         </form>
                         <form action="{% url 'st-att-conduct-leave' 0 %}".replace('0', studentId) method="post">
-                            {% csrf_token %}
+                            <input type="hidden" name="csrfmiddlewaretoken" value="${csrftoken}">
                             <button type="submit" class="btn btn-warning action-btn btn-attendance" data-status="leave">
                                 <i class='bx bx-time me-1'></i> Leave
                             </button>
@@ -364,6 +364,13 @@
                 presentProgressEl.setAttribute('aria-valuenow', presentPercent);
             }
         }
+        
+        // Add CSRF token to all AJAX requests
+        XMLHttpRequest.prototype.origOpen = XMLHttpRequest.prototype.open;
+        XMLHttpRequest.prototype.open = function() {
+            this.origOpen.apply(this, arguments);
+            this.setRequestHeader('X-CSRFToken', csrftoken);
+        };
     });
 </script>
 {% endblock %}
