@@ -18,7 +18,7 @@
                 <p class="text-info mb-3">
                     <i class="bx bx-info-circle me-1"></i> Training the dataset will analyze student participation patterns and help predict student engagement.
                 </p>
-                <form action="{% url 'su-train' %}" method="post">
+                <form action="{% url 'su-train' %}" method="post" id="training-form">
                     {% csrf_token %}
                     <div class="form-group mb-3">
                         <label for="training_options">Training Options</label>
@@ -32,7 +32,7 @@
                         <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%"></div>
                     </div>
                     <div class="form-group mb-3">
-                        <button type="submit" class="btn btn-primary" id="train-btn">
+                        <button type="button" class="btn btn-primary" id="train-btn">
                             <i class="bx bx-cog me-1"></i> Train the Dataset
                         </button>
                     </div>
@@ -98,6 +98,7 @@
         const progressBar = document.querySelector('#training-progress .progress-bar');
         const progressContainer = document.getElementById('training-progress');
         const successAlert = document.getElementById('training-success');
+        const trainingForm = document.getElementById('training-form');
         
         if (trainBtn) {
             trainBtn.addEventListener('click', function(e) {
@@ -117,7 +118,7 @@
                         
                         // Submit the form after showing success
                         setTimeout(function() {
-                            document.querySelector('form[action="{% url "su-train" %}"]').submit();
+                            trainingForm.submit();
                         }, 1000);
                     }
                 }, 150);

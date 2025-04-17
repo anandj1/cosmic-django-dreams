@@ -109,7 +109,7 @@
             });
         });
         
-        // Ensure CSRF token is included in all AJAX requests
+        // Get CSRF token for AJAX requests
         function getCookie(name) {
             let cookieValue = null;
             if (document.cookie && document.cookie !== '') {
@@ -127,13 +127,15 @@
         
         const csrftoken = getCookie('csrftoken');
         
-        // Set up AJAX to always send CSRF token
-        const xhr = new XMLHttpRequest();
-        xhr.setRequestHeader = function(header, value) {
-            if(header === 'X-CSRFToken') {
-                this.setRequestHeader(header, csrftoken);
-            }
-        };
+        // Setup for AJAX requests to include CSRF token
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set up AJAX to always send CSRF token
+            const xhrSend = XMLHttpRequest.prototype.send;
+            XMLHttpRequest.prototype.send = function() {
+                this.setRequestHeader('X-CSRFToken', csrftoken);
+                return xhrSend.apply(this, arguments);
+            };
+        });
     });
 </script>
 {% endblock %}

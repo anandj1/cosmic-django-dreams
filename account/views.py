@@ -41,18 +41,18 @@ def login(request):
     insertRoles()
     insertAdmin()
     content['title'] = 'Login'
-    if(request.method == 'POST'):
-        username = request.POST['username']
-        password = request.POST['password']
+    if request.method == 'POST':
+        username = request.POST.get('username', '')
+        password = request.POST.get('password', '')
         # select * from profiles where username = admin and password = admin limit 1
-        profile = Profile.objects.filter(username = username, password = password).first()
-        if(profile):
+        profile = Profile.objects.filter(username=username, password=password).first()
+        if profile:
             request.session['account_name'] = profile.name
             request.session['account_id'] = profile.id
             request.session['account_role'] = profile.role_id
 
-            if(profile.role_id == 3):
-                std = Student.objects.filter(profile_id = int(request.session['account_id'])).first()
+            if profile.role_id == 3:
+                std = Student.objects.filter(profile_id=int(request.session['account_id'])).first()
                 request.session['student_id'] = std.id
 
                 # Set cookie for games
@@ -61,8 +61,8 @@ def login(request):
                 response.set_cookie('ck_std_profile_id', str(request.session['account_id']), 86400)
                 response.set_cookie('ck_std_id', str(request.session['student_id']), 86400)
                 return response
-            elif(profile.role_id == 2):
-                std = Staff.objects.filter(profile_id = int(request.session['account_id'])).first()
+            elif profile.role_id == 2:
+                std = Staff.objects.filter(profile_id=int(request.session['account_id'])).first()
                 request.session['staff_id'] = std.id
                 return HttpResponseRedirect(reverse('st-index'))
             else:

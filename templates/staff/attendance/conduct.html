@@ -148,21 +148,18 @@
                                 <div class="d-flex justify-content-center action-buttons">
                                     <form action="{% url 'st-att-conduct-present' x.id %}" method="post" class="me-2">
                                         {% csrf_token %}
-                                        <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
                                         <button type="submit" class="btn btn-success action-btn btn-attendance" data-status="present">
                                             <i class='bx bx-check me-1'></i> Present
                                         </button>
                                     </form>
                                     <form action="{% url 'st-att-conduct-absent' x.id %}" method="post" class="me-2">
                                         {% csrf_token %}
-                                        <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
                                         <button type="submit" class="btn btn-danger action-btn btn-attendance" data-status="absent">
                                             <i class='bx bx-x me-1'></i> Absent
                                         </button>
                                     </form>
                                     <form action="{% url 'st-att-conduct-leave' x.id %}" method="post">
                                         {% csrf_token %}
-                                        <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
                                         <button type="submit" class="btn btn-warning action-btn btn-attendance" data-status="leave">
                                             <i class='bx bx-time me-1'></i> Leave
                                         </button>
@@ -185,7 +182,7 @@
                                     {% endif %}
                                     
                                     <div class="mt-2">
-                                        <button class="btn btn-sm btn-outline-secondary change-status-btn">
+                                        <button class="btn btn-sm btn-outline-secondary change-status-btn" data-student-id="{{ x.id }}">
                                             <i class='bx bx-edit me-1'></i> Change
                                         </button>
                                     </div>
@@ -252,66 +249,95 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Get CSRF token for AJAX requests
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        
+        const csrftoken = getCookie('csrftoken');
+        
         // Search functionality
         const searchBox = document.querySelector('.search-box');
-        searchBox.addEventListener('keyup', function() {
-            const searchTerm = this.value.toLowerCase();
-            const rows = document.querySelectorAll('tbody tr');
-            
-            rows.forEach(row => {
-                const studentName = row.querySelector('h6').textContent.toLowerCase();
-                const studentEmail = row.querySelector('small').textContent.toLowerCase();
-                const studentEnrollment = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
+        if (searchBox) {
+            searchBox.addEventListener('keyup', function() {
+                const searchTerm = this.value.toLowerCase();
+                const rows = document.querySelectorAll('tbody tr');
                 
-                if (studentName.includes(searchTerm) || 
-                    studentEmail.includes(searchTerm) || 
-                    studentEnrollment.includes(searchTerm)) {
-                    row.style.display = '';
-                } else {
-                    row.style.display = 'none';
-                }
+                rows.forEach(row => {
+                    const studentName = row.querySelector('h6') ? row.querySelector('h6').textContent.toLowerCase() : '';
+                    const studentEmail = row.querySelector('small') ? row.querySelector('small').textContent.toLowerCase() : '';
+                    const studentEnrollment = row.querySelector('td:nth-child(2)') ? row.querySelector('td:nth-child(2)').textContent.toLowerCase() : '';
+                    
+                    if (studentName.includes(searchTerm) || 
+                        studentEmail.includes(searchTerm) || 
+                        studentEnrollment.includes(searchTerm)) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
             });
-        });
+        }
         
         // Mark All Present Button
-        document.getElementById('markAllBtn').addEventListener('click', function() {
-            if (confirm('Are you sure you want to mark all students present?')) {
-                // This would submit all present forms at once
-                document.querySelectorAll('.btn-attendance[data-status="present"]').forEach(button => {
-                    button.closest('form').submit();
-                });
-            }
-        });
+        const markAllBtn = document.getElementById('markAllBtn');
+        if (markAllBtn) {
+            markAllBtn.addEventListener('click', function() {
+                if (confirm('Are you sure you want to mark all students present?')) {
+                    const presentButtons = document.querySelectorAll('.btn-attendance[data-status="present"]');
+                    presentButtons.forEach((button, index) => {
+                        // Stagger form submissions to prevent overwhelming the server
+                        setTimeout(() => {
+                            const form = button.closest('form');
+                            if (form) form.submit();
+                        }, index * 200);
+                    });
+                }
+            });
+        }
         
         // Change Status Buttons
-        document.querySelectorAll('.change-status-btn').forEach(btn => {
+        const changeStatusBtns = document.querySelectorAll('.change-status-btn');
+        changeStatusBtns.forEach(btn => {
             btn.addEventListener('click', function() {
+                const studentId = this.getAttribute('data-student-id');
                 const row = this.closest('tr');
                 const statusCell = this.closest('td');
                 
                 // Show action buttons again
                 statusCell.innerHTML = `
                     <div class="d-flex justify-content-center action-buttons">
-                        <form action="{% url 'st-att-conduct-present' 0 %}" method="post" class="me-2">
+                        <form action="{% url 'st-att-conduct-present' 0 %}".replace('0', studentId) method="post" class="me-2">
                             {% csrf_token %}
                             <button type="submit" class="btn btn-success action-btn btn-attendance" data-status="present">
                                 <i class='bx bx-check me-1'></i> Present
                             </button>
                         </form>
-                        <form action="{% url 'st-att-conduct-absent' 0 %}" method="post" class="me-2">
+                        <form action="{% url 'st-att-conduct-absent' 0 %}".replace('0', studentId) method="post" class="me-2">
                             {% csrf_token %}
                             <button type="submit" class="btn btn-danger action-btn btn-attendance" data-status="absent">
                                 <i class='bx bx-x me-1'></i> Absent
                             </button>
                         </form>
-                        <form action="{% url 'st-att-conduct-leave' 0 %}" method="post">
+                        <form action="{% url 'st-att-conduct-leave' 0 %}".replace('0', studentId) method="post">
                             {% csrf_token %}
                             <button type="submit" class="btn btn-warning action-btn btn-attendance" data-status="leave">
                                 <i class='bx bx-time me-1'></i> Leave
                             </button>
                         </form>
                     </div>
-                `.replace(/0/g, row.dataset.studentId);
+                `;
             });
         });
         
@@ -323,13 +349,20 @@
             const markedCount = document.querySelectorAll('tbody tr .status-badge').length;
             const presentCount = document.querySelectorAll('tbody tr .status-badge-present').length;
             
-            document.getElementById('totalCount').textContent = totalCount;
-            document.getElementById('markedCount').textContent = markedCount;
+            const totalCountEl = document.getElementById('totalCount');
+            const markedCountEl = document.getElementById('markedCount');
+            const presentPercentEl = document.getElementById('presentPercent');
+            const presentProgressEl = document.getElementById('presentProgress');
+            
+            if (totalCountEl) totalCountEl.textContent = totalCount;
+            if (markedCountEl) markedCountEl.textContent = markedCount;
             
             const presentPercent = totalCount > 0 ? Math.round((presentCount / totalCount) * 100) : 0;
-            document.getElementById('presentPercent').textContent = presentPercent;
-            document.getElementById('presentProgress').style.width = presentPercent + '%';
-            document.getElementById('presentProgress').setAttribute('aria-valuenow', presentPercent);
+            if (presentPercentEl) presentPercentEl.textContent = presentPercent;
+            if (presentProgressEl) {
+                presentProgressEl.style.width = presentPercent + '%';
+                presentProgressEl.setAttribute('aria-valuenow', presentPercent);
+            }
         }
     });
 </script>
