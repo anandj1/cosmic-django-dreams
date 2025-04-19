@@ -2,7 +2,6 @@ from msilib.schema import Class
 from django.http import JsonResponse
 from django.http import HttpResponseRedirect, HttpResponseForbidden
 from django.views.decorators.csrf import csrf_protect
-from django.urls import reverse
 from django.contrib import messages
 from django.shortcuts import redirect
 from django.db import IntegrityError
@@ -21,7 +20,6 @@ from django.urls import reverse
 from django.contrib import messages
 from suadmin.models import Event
 from student.models import FlippedDiscussion
-import logging
 from suadmin.models import Event
 from django.urls import reverse
 from django.contrib import messages
@@ -404,7 +402,7 @@ def attPresent(request, pk):
 
                 coin = 0
                 if att_day == 'Regular':
-                    coin = 0
+                    coin = 50
                 elif att_day == 'Bonus':
                     coin = 100
 
