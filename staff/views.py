@@ -1,4 +1,4 @@
-from msilib.schema import Class
+
 from django.http import JsonResponse
 from django.http import HttpResponseRedirect, HttpResponseForbidden
 from django.views.decorators.csrf import csrf_protect
