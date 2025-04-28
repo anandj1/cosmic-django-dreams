@@ -71,7 +71,8 @@ WSGI_APPLICATION = 'projectdir.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
+        'ENGINE': 'mysql.connector.django'
+,
         'NAME': os.environ.get('MYSQL_DATABASE', 'gamification'),
         'USER': os.environ.get('MYSQL_USER', 'root'),
         'PASSWORD': os.environ.get('MYSQL_PASSWORD', 'Radhey9922'),
