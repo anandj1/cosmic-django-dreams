@@ -1,4 +1,5 @@
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -67,19 +68,22 @@ TEMPLATES = [
 WSGI_APPLICATION = 'projectdir.wsgi.application'
 
 # Database configuration
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'gamification',  # Replace with your database name
-        'USER': 'root',          # Replace with your database user
-        'PASSWORD': 'Radhey9922',  # Replace with your database password
-        'HOST': '127.0.0.1',     # Use only one host value
-        'PORT': 3306,            # Replace with your database port if different
+        'NAME': os.environ.get('MYSQL_DATABASE', 'gamification'),
+        'USER': os.environ.get('MYSQL_USER', 'root'),
+        'PASSWORD': os.environ.get('MYSQL_PASSWORD', 'Radhey9922'),
+        'HOST': os.environ.get('MYSQL_HOST', 'localhost'),
+        'PORT': os.environ.get('MYSQL_PORT', '3306'),
         'OPTIONS': {
             'init_command': "SET sql_mode = 'STRICT_TRANS_TABLES'"
         }
     }
 }
+    
+
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
